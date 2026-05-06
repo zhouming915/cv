@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -243,7 +244,208 @@
       .reveal-text { font-size: 28px; }
       .footer { padding: 30px 20px; font-size: 12px; }
     }
-  </style>
+  
+    /* ==================== Glass Cards Carousel (设计理念) ==================== */
+    .glass-carousel-section {
+      padding: 120px 50px;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 30%, #0d0d2b 60%, #050514 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-carousel-section .section-title {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 60px;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-weight: 700;
+    }
+
+    .glass-carousel-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-cards-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-card-item {
+      position: absolute;
+      width: 300px;
+      height: 400px;
+      border-radius: 24px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      user-select: none;
+      background: rgba(30, 30, 70, 0.25);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(120, 120, 220, 0.2);
+      box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-card-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1.5px;
+      background: linear-gradient(180deg, 
+        rgba(180, 180, 255, 0.5) 0%, 
+        rgba(120, 120, 200, 0.15) 20%,
+        rgba(80, 80, 160, 0) 50%,
+        rgba(60, 60, 120, 0.1) 80%,
+        rgba(40, 40, 80, 0.2) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.7;
+      transition: opacity 0.4s ease;
+    }
+
+    .glass-card-item:hover::before {
+      opacity: 1;
+    }
+
+    .glass-card-item::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      width: 60px;
+      height: 120px;
+      background-image: radial-gradient(circle, rgba(150, 150, 220, 0.3) 1.5px, transparent 1.5px);
+      background-size: 10px 10px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .glass-card-item .card-label {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 8px;
+      background: rgba(80, 80, 160, 0.2);
+      border: 1px solid rgba(120, 120, 200, 0.25);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(180, 180, 240, 0.8);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .glass-card-item .card-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+      margin-top: 16px;
+    }
+
+    .glass-card-item .card-image {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+      position: relative;
+      background: rgba(20, 20, 50, 0.5);
+      border: 1px solid rgba(100, 100, 180, 0.15);
+    }
+
+    .glass-card-item .card-image-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .glass-card-item .card-desc {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 14px;
+      color: rgba(180, 180, 220, 0.65);
+      line-height: 1.8;
+    }
+
+    /* 图案 */
+    .pattern-fingerprint { width: 100px; height: 100px; }
+    .pattern-fingerprint svg { width: 100%; height: 100%; opacity: 0.6; }
+    .pattern-wave { width: 120px; height: 80px; position: relative; overflow: hidden; }
+    .pattern-wave::before { content: ''; position: absolute; width: 200%; height: 200%; background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(100,150,255,0.15) 4px, rgba(100,150,255,0.15) 8px); animation: wave-slide 3s linear infinite; }
+    @keyframes wave-slide { 0% { transform: translate(-50%,-50%); } 100% { transform: translate(0,0); } }
+    .pattern-grid { width: 100px; height: 100px; background-image: linear-gradient(rgba(120,160,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(120,160,255,0.2) 1px, transparent 1px); background-size: 20px 20px; animation: grid-pulse 2s ease-in-out infinite; }
+    @keyframes grid-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+
+    /* 位置 */
+    .glass-card-item.position-center { transform: translateX(0) scale(1.5); z-index: 10; opacity: 1; }
+    .glass-card-item.position-left { transform: translateX(-340px) scale(0.82); z-index: 5; opacity: 1; }
+    .glass-card-item.position-right { transform: translateX(340px) scale(0.82); z-index: 5; opacity: 1; }
+    .glass-card-item.position-hidden-left { transform: translateX(-600px) scale(0.6); z-index: 0; opacity: 0; }
+    .glass-card-item.position-hidden-right { transform: translateX(600px) scale(0.6); z-index: 0; opacity: 0; }
+
+    .glass-carousel-hint {
+      text-align: center;
+      margin-top: 30px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      font-size: 12px;
+      color: rgba(150, 150, 200, 0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* 背景光效 */
+    .glass-bg-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(80, 60, 180, 0.15) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass-bg-glow-1 { top: -150px; left: -150px; }
+    .glass-bg-glow-2 { bottom: -150px; right: -150px; background: radial-gradient(circle, rgba(60, 40, 140, 0.1) 0%, transparent 70%); }
+
+    @media (max-width: 800px) {
+      .glass-carousel-container { height: 400px; }
+      .glass-card-item { width: 220px; height: 300px; padding: 20px 16px; }
+      .glass-card-item .card-title { font-size: 20px; }
+      .glass-card-item .card-desc { font-size: 11px; }
+      .glass-card-item .card-image { height: 90px; margin: 12px 0; }
+      .glass-card-item.position-center { transform: translateX(0) scale(1.35); }
+      .glass-card-item.position-left { transform: translateX(-200px) scale(0.82); }
+      .glass-card-item.position-right { transform: translateX(200px) scale(0.82); }
+      .glass-carousel-section .section-title { font-size: 32px; }
+    }
+</style>
 </head>
 <body>
   <div class="scroll-progress"></div>
@@ -297,13 +499,14 @@
     </div>
   </section>
 
-  <section class="cards-section" id="concepts">
-    <h2>设计理念</h2>
-    <div class="cards-container">
-      <div class="card"><h3>创新思维</h3><p>突破传统界限，用前瞻性的设计思维创造令人惊叹的作品。每一个设计都始于一个大胆的梦想。</p></div>
-      <div class="card"><h3>用户体验</h3><p>以用户为中心的设计哲学，让每一个交互都流畅自然。设计不仅是视觉，更是感受。</p></div>
-      <div class="card"><h3>精细打磨</h3><p>对每一个像素、每一行代码都精益求精。细节决定成败，追求极致的完美。</p></div>
+  <section class="glass-carousel-section" id="concepts">
+    <div class="glass-bg-glow glass-bg-glow-1"></div>
+    <div class="glass-bg-glow glass-bg-glow-2"></div>
+    <h2 class="section-title">设计理念</h2>
+    <div class="glass-carousel-container">
+      <div class="glass-cards-track" id="glassCardsTrack"></div>
     </div>
+    <div class="glass-carousel-hint">Click to navigate</div>
   </section>
 
   <section class="timeline-section" id="journey">
@@ -487,6 +690,92 @@
 
     // Navbar scroll
     gsap.to('.navbar', { backgroundColor: 'rgba(10,10,10,0.95)', duration: 0.3, scrollTrigger: { trigger: '.hero', start: 'bottom top', toggleActions: 'play none none reverse' } });
-  </script>
+  
+
+    // ==================== Glass Cards Carousel ====================
+    const glassCardsData = [
+      { label: 'Philosophy 01', title: '创新思维', desc: '突破传统界限，用前瞻性的设计思维创造令人惊叹的作品。每一个设计都始于一个大胆的梦想。', pattern: 'fingerprint' },
+      { label: 'Philosophy 02', title: '用户体验', desc: '以用户为中心的设计哲学，让每一个交互都流畅自然。设计不仅是视觉，更是感受。', pattern: 'wave' },
+      { label: 'Philosophy 03', title: '精细打磨', desc: '对每一个像素、每一行代码都精益求精。细节决定成败，追求极致的完美。', pattern: 'grid' },
+    ];
+
+    const glassTrack = document.getElementById('glassCardsTrack');
+    let glassCurrentIndex = 0;
+    let glassAutoPlayInterval;
+    let glassHoverPauseTimeout;
+
+    function getGlassPatternHtml(pattern) {
+      if (pattern === 'fingerprint') {
+        return `<div class="pattern-fingerprint"><svg viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="45" rx="35" ry="40" stroke="rgba(100,150,255,0.4)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="28" ry="33" stroke="rgba(100,150,255,0.5)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="21" ry="26" stroke="rgba(100,150,255,0.6)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="14" ry="19" stroke="rgba(100,150,255,0.7)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="7" ry="12" stroke="rgba(100,150,255,0.8)" stroke-width="1.5"/><path d="M15 45 Q25 20 50 15 Q75 20 85 45" stroke="rgba(100,150,255,0.3)" stroke-width="1.5" fill="none"/><path d="M20 55 Q30 30 50 25 Q70 30 80 55" stroke="rgba(100,150,255,0.4)" stroke-width="1.5" fill="none"/><path d="M25 65 Q35 40 50 35 Q65 40 75 65" stroke="rgba(100,150,255,0.5)" stroke-width="1.5" fill="none"/></svg></div>`;
+      } else if (pattern === 'wave') {
+        return `<div class="pattern-wave"></div>`;
+      } else {
+        return `<div class="pattern-grid"></div>`;
+      }
+    }
+
+    function createGlassCards() {
+      glassCardsData.forEach((data, i) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card-item';
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div>
+            <div class="card-label">${data.label}</div>
+            <div class="card-title">${data.title}</div>
+            <div class="card-image"><div class="card-image-inner">${getGlassPatternHtml(data.pattern)}</div></div>
+          </div>
+          <div class="card-desc">${data.desc}</div>
+        `;
+        card.addEventListener('click', () => goToGlassSlide(i));
+        card.addEventListener('mouseenter', () => onGlassCardHover(i));
+        card.addEventListener('mouseleave', () => onGlassCardLeave());
+        glassTrack.appendChild(card);
+      });
+    }
+
+    function updateGlassPositions() {
+      const cards = glassTrack.querySelectorAll('.glass-card-item');
+      const total = cards.length;
+      cards.forEach((card, i) => {
+        card.classList.remove('position-center', 'position-left', 'position-right', 'position-hidden-left', 'position-hidden-right');
+        let diff = i - glassCurrentIndex;
+        if (diff > 1) diff -= total;
+        if (diff < -1) diff += total;
+        if (diff === 0) card.classList.add('position-center');
+        else if (diff === -1) card.classList.add('position-left');
+        else if (diff === 1) card.classList.add('position-right');
+        else if (diff < -1) card.classList.add('position-hidden-left');
+        else card.classList.add('position-hidden-right');
+      });
+    }
+
+    function goToGlassSlide(index) {
+      glassCurrentIndex = index;
+      if (glassCurrentIndex < 0) glassCurrentIndex = glassCardsData.length - 1;
+      if (glassCurrentIndex >= glassCardsData.length) glassCurrentIndex = 0;
+      updateGlassPositions();
+      resetGlassAutoPlay();
+    }
+
+    function nextGlassSlide() { goToGlassSlide(glassCurrentIndex + 1); }
+    function prevGlassSlide() { goToGlassSlide(glassCurrentIndex - 1); }
+
+    function startGlassAutoPlay() { glassAutoPlayInterval = setInterval(nextGlassSlide, 2500); }
+    function stopGlassAutoPlay() { clearInterval(glassAutoPlayInterval); clearTimeout(glassHoverPauseTimeout); }
+    function resetGlassAutoPlay() { stopGlassAutoPlay(); startGlassAutoPlay(); }
+
+    function onGlassCardHover(index) {
+      if (index === glassCurrentIndex) {
+        stopGlassAutoPlay();
+        glassHoverPauseTimeout = setTimeout(() => { nextGlassSlide(); startGlassAutoPlay(); }, 1000);
+      }
+    }
+    function onGlassCardLeave() { clearTimeout(glassHoverPauseTimeout); resetGlassAutoPlay(); }
+
+    createGlassCards();
+    updateGlassPositions();
+    startGlassAutoPlay();
+</script>
 </body>
 </html>
