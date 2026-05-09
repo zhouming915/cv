@@ -1,0 +1,1832 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>周明 · UI设计师</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial', 'PingFang SC', sans-serif; background: #0a0a0a; color: #ffffff; overflow-x: hidden; }
+
+    /* 导航栏 */
+    .navbar { position: fixed; top: 0; width: 100%; padding: 20px 50px; background: rgba(10,10,10,0.9); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+    .navbar h1 { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .navbar ul { display: flex; list-style: none; gap: 30px; }
+    .navbar a { color: #ffffff; text-decoration: none; font-size: 14px; transition: color 0.3s; }
+    .navbar a:hover { color: #667eea; }
+
+    /* ==================== Glass Toggle Hero ==================== */
+    .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; transition: background 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .hero.dream-mode { background: linear-gradient(135deg, #5a6fd6 0%, #6b5fb8 25%, #7a52a3 50%, #8b4a8e 75%, #9a4580 100%); }
+    .hero.design-mode { background: radial-gradient(ellipse at 70% 30%, #fff3e0 0%, #ffcc02 25%, #ff9800 55%, #e65100 85%, #bf360c 100%); }
+
+    .hero-container { text-align: center; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+    .hero-title { color: rgba(255,255,255,0.88); font-size: 1.3rem; font-weight: 400; margin-bottom: 0.6rem; letter-spacing: 0.08em; transition: all 0.8s ease; }
+    .hero.design-mode .hero-title { color: rgba(255,255,255,0.95); text-shadow: 0 2px 10px rgba(191,54,12,0.3); }
+    .hero-subtitle { color: rgba(255,255,255,0.96); font-size: 4.2rem; font-weight: 800; margin-bottom: 3.5rem; letter-spacing: -0.02em; line-height: 1.1; transition: all 0.8s ease; text-shadow: 0 2px 20px rgba(0,0,0,0.12); }
+    .hero.design-mode .hero-subtitle { color: rgba(255,255,255,0.98); text-shadow: 0 2px 20px rgba(191,54,12,0.4); }
+
+    /* Toggle */
+    .toggle-wrapper { position: relative; width: 340px; height: 100px; margin: 0 auto 3rem; }
+    .toggle-track { position: absolute; width: 100%; height: 100%; border-radius: 50px; background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.18); box-shadow: inset 0 2px 10px rgba(0,0,0,0.2), 0 8px 32px rgba(0,0,0,0.15); overflow: hidden; cursor: pointer; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); }
+    .hero.design-mode .toggle-track { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); box-shadow: inset 0 2px 10px rgba(0,0,0,0.15), 0 8px 32px rgba(191,54,12,0.2); }
+
+    .glow-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 85%; height: 70%; border-radius: 40px; transition: all 0.9s cubic-bezier(0.4,0,0.2,1); filter: blur(18px); opacity: 0.75; }
+    .glow-layer.dream { background: linear-gradient(135deg, #9d7bff 0%, #7b68ee 30%, #6a5acd 60%, #5b4cdb 100%); box-shadow: 0 0 80px rgba(157,123,255,0.5), 0 0 160px rgba(123,104,238,0.3), 0 0 240px rgba(106,90,205,0.15); }
+    .glow-layer.design { background: linear-gradient(135deg, #ffd54f 0%, #ffab00 30%, #ff6f00 60%, #ff3d00 100%); box-shadow: 0 0 80px rgba(255,213,79,0.6), 0 0 160px rgba(255,171,0,0.4), 0 0 240px rgba(255,111,0,0.2); opacity: 0; }
+
+    .toggle-thumb { position: absolute; top: 8px; width: 84px; height: 84px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1.5px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.35), inset 0 -1px 2px rgba(0,0,0,0.1); transition: transform 0.7s cubic-bezier(0.34,1.56,0.64,1), background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease; z-index: 10; display: flex; align-items: center; justify-content: center; }
+    .hero.design-mode .toggle-thumb { background: rgba(255,255,255,0.22); border: 1.5px solid rgba(255,255,255,0.4); box-shadow: 0 4px 25px rgba(255,111,0,0.3), inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.08); }
+    .toggle-thumb.left { transform: translateX(8px); }
+    .toggle-thumb.right { transform: translateX(248px); }
+    .toggle-thumb::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); transition: all 0.6s ease; }
+    .hero.design-mode .toggle-thumb::before { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }
+
+    .toggle-icon { width: 38px; height: 38px; position: relative; z-index: 2; }
+    .toggle-icon svg { width: 100%; height: 100%; fill: white; filter: drop-shadow(0 0 10px rgba(255,255,255,0.7)); transition: all 0.5s ease; }
+    .hero.design-mode .toggle-icon svg { filter: drop-shadow(0 0 12px rgba(255,213,79,0.8)); }
+
+    .toggle-labels { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; pointer-events: none; z-index: 5; }
+    .toggle-label { font-size: 1.5rem; font-weight: 600; color: white; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); text-shadow: 0 2px 10px rgba(0,0,0,0.25); letter-spacing: 0.02em; }
+    .toggle-label.dream { opacity: 1; transform: translateX(0); }
+    .toggle-label.design { opacity: 0.5; transform: translateX(10px); }
+
+    .toggle-wrapper.design-active .glow-layer.dream { opacity: 0; }
+    .toggle-wrapper.design-active .glow-layer.design { opacity: 0.85; }
+    .toggle-wrapper.design-active .toggle-label.dream { opacity: 0; transform: translateX(-25px); }
+    .toggle-wrapper.design-active .toggle-label.design { opacity: 1; transform: translateX(0); }
+
+    /* Profile */
+    .profile { text-align: center; color: rgba(255,255,255,0.9); transition: all 0.8s ease; margin-top: 0.5rem; }
+    .hero.design-mode .profile { color: rgba(255,255,255,0.95); }
+    .profile-name { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.8rem; letter-spacing: 0.05em; text-shadow: 0 2px 12px rgba(0,0,0,0.15); transition: all 0.8s ease; }
+    .hero.design-mode .profile-name { text-shadow: 0 2px 12px rgba(191,54,12,0.3); }
+    .profile-title { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.6rem; opacity: 0.9; letter-spacing: 0.02em; }
+    .profile-skills { font-size: 0.9rem; opacity: 0.75; margin-bottom: 0.5rem; line-height: 1.6; }
+    .profile-motto { font-size: 0.85rem; opacity: 0.65; font-style: italic; letter-spacing: 0.03em; }
+
+    /* Particles */
+    .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
+    .particle { position: absolute; border-radius: 50%; animation: float 15s infinite ease-in-out; transition: background 1s ease, box-shadow 1s ease; }
+    .particle.dream-particle { background: rgba(180,160,255,0.35); box-shadow: 0 0 6px rgba(180,160,255,0.25); }
+    .particle.design-particle { background: rgba(255,213,79,0.5); box-shadow: 0 0 8px rgba(255,183,77,0.4); }
+    @keyframes float { 0%,100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { transform: translateY(-100px) rotate(720deg); opacity: 0; } }
+
+    /* Sun rays */
+    .sun-rays { position: absolute; top: -50%; right: -30%; width: 150%; height: 150%; background: conic-gradient(from 180deg at 50% 50%, transparent 0deg, rgba(255,213,79,0.03) 10deg, transparent 20deg, rgba(255,183,77,0.04) 30deg, transparent 40deg, rgba(255,213,79,0.03) 50deg, transparent 60deg, rgba(255,152,0,0.02) 70deg, transparent 80deg, rgba(255,213,79,0.03) 90deg, transparent 100deg, rgba(255,183,77,0.04) 110deg, transparent 120deg, rgba(255,213,79,0.02) 130deg, transparent 360deg); pointer-events: none; z-index: 0; opacity: 0; transition: opacity 1.5s ease; animation: rotate-rays 60s linear infinite; }
+    .hero.design-mode .sun-rays { opacity: 1; }
+    @keyframes rotate-rays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ==================== 原有区域样式 ==================== */
+    .cards-section { padding: 100px 50px; background: #141322; }
+    .cards-section h2 { text-align: center; font-size: 48px; margin-bottom: 60px; color: #ffffff; }
+    .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; opacity: 0; transform: translateY(50px); transition: transform 0.3s, box-shadow 0.3s; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102,126,234,0.3); }
+    .card h3 { font-size: 28px; margin-bottom: 15px; color: #667eea; }
+    .card p { font-size: 16px; line-height: 1.8; color: #b0b0b0; }
+
+    .timeline-section { padding: 100px 50px; background: #0a0a0a; position: relative; }
+    .timeline-section h2 { text-align: center; font-size: 48px; margin-bottom: 80px; color: #ffffff; }
+    .timeline { position: relative; max-width: 1000px; margin: 0 auto; }
+    .timeline::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 2px; }
+    .timeline-item { position: relative; margin-bottom: 60px; opacity: 0; }
+    .timeline-item::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: #667eea; border-radius: 50%; border: 4px solid #0a0a0a; z-index: 1; transition: all 0.3s; }
+    .timeline-item:hover::before { background: #764ba2; transform: translateX(-50%) scale(1.3); box-shadow: 0 0 20px rgba(102,126,234,0.6); }
+    .timeline-item.left .timeline-content { margin-right: calc(50% + 40px); text-align: right; }
+    .timeline-item.right .timeline-content { margin-left: calc(50% + 40px); text-align: left; }
+    .timeline-content { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 30px; transition: all 0.3s; }
+    .timeline-content:hover { transform: translateY(-5px); box-shadow: 0 10px 40px rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.3); }
+    .timeline-year { font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+    .timeline-title { font-size: 20px; font-weight: 600; color: #ffffff; margin-bottom: 10px; }
+    .timeline-desc { font-size: 16px; line-height: 1.6; color: #b0b0b0; }
+
+    /* ==================== 案例展示 ==================== */
+    .showcase-section {
+      padding: 80px 50px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #0a0e27 50%, #0a0e27 100%);
+      position: relative;
+    }
+    .showcase-section h2 {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+    .showcase-subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: #8899bb;
+      margin-bottom: 40px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== 数据大屏 ===== */
+    .datav-wrap {
+      background: linear-gradient(160deg, #0a0e27 0%, #1a1f3a 60%, #0a0e27 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(0,212,255,0.12);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .datav-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0,212,255,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(123,47,255,0.05) 0%, transparent 60%);
+    }
+    .datav-dashboard {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* KPI 卡片 */
+    .datav-kpi-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .datav-card {
+      background: linear-gradient(135deg, rgba(17,24,48,0.85) 0%, rgba(26,31,58,0.75) 100%);
+      border: 1px solid rgba(0,212,255,0.12);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: border-color 0.3s, opacity 0.6s, transform 0.6s;
+    }
+    .datav-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+      opacity: 0.6;
+    }
+    .datav-card:hover { border-color: rgba(0,212,255,0.3); }
+    .datav-kpi-label {
+      font-size: 12px;
+      color: #8899bb;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .datav-kpi-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+    .datav-kpi-indicator.cyan { background: #00d4ff; animation: datav-pulse-cyan 2s ease-in-out infinite; }
+    .datav-kpi-indicator.purple { background: #7b2fff; animation: datav-pulse-purple 2s ease-in-out infinite; }
+    .datav-kpi-indicator.green { background: #00ff88; animation: datav-pulse-green 2s ease-in-out infinite; }
+    .datav-kpi-indicator.orange { background: #ff6b35; animation: datav-pulse-orange 2s ease-in-out infinite; }
+    @keyframes datav-pulse-cyan {
+      0%,100% { box-shadow: 0 0 20px rgba(0,212,255,0.4), 0 0 60px rgba(0,212,255,0.15); }
+      50% { box-shadow: 0 0 30px rgba(0,212,255,0.7), 0 0 80px rgba(0,212,255,0.25); }
+    }
+    @keyframes datav-pulse-purple {
+      0%,100% { box-shadow: 0 0 20px rgba(123,47,255,0.4); }
+      50% { box-shadow: 0 0 30px rgba(123,47,255,0.7), 0 0 80px rgba(123,47,255,0.25); }
+    }
+    @keyframes datav-pulse-green {
+      0%,100% { box-shadow: 0 0 20px rgba(0,255,136,0.4); }
+      50% { box-shadow: 0 0 30px rgba(0,255,136,0.7), 0 0 80px rgba(0,255,136,0.25); }
+    }
+    @keyframes datav-pulse-orange {
+      0%,100% { box-shadow: 0 0 20px rgba(255,107,53,0.4); }
+      50% { box-shadow: 0 0 30px rgba(255,107,53,0.7), 0 0 80px rgba(255,107,53,0.25); }
+    }
+    .datav-kpi-value {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.6;
+      color: #e8f4fd;
+    }
+    .datav-kpi-value .num-cyan {
+      background: linear-gradient(135deg, #00d4ff, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-kpi-value .num-purple {
+      background: linear-gradient(135deg, #7b2fff, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-kpi-value .num-green {
+      background: linear-gradient(135deg, #00ff88, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-kpi-value .num-orange {
+      background: linear-gradient(135deg, #ff6b35, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-kpi-sub {
+      font-size: 11px;
+      color: #8899bb;
+      margin-top: 6px;
+    }
+    .datav-kpi-sub span { color: #00ff88; }
+
+    /* 图表标题 */
+    .datav-chart-title {
+      font-size: 14px;
+      color: #8899bb;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .datav-chart-title::before {
+      content: "";
+      width: 3px;
+      height: 16px;
+      background: #00d4ff;
+      border-radius: 2px;
+    }
+
+    /* 3D 柱状图 */
+    .datav-chart-3d {
+      grid-column: span 7;
+    }
+    .datav-bar-scene {
+      perspective: 800px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 280px;
+      padding: 0 10px;
+      transform: rotateX(15deg);
+      transform-style: preserve-3d;
+    }
+    .datav-bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-style: preserve-3d;
+    }
+    .datav-bar-col-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .datav-bar-col {
+      width: 28px;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+    .datav-bar-col .face {
+      position: absolute;
+      backface-visibility: hidden;
+    }
+    .datav-bar-col .front {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #00d4ff, rgba(0,212,255,0.3));
+      transform-origin: bottom;
+    }
+    .datav-bar-col .top {
+      width: 100%;
+      height: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(0,212,255,0.1));
+      transform: rotateX(-90deg) translateY(-8px);
+      top: 0;
+    }
+    .datav-bar-col .right {
+      width: 16px;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,212,255,0.6), rgba(0,212,255,0.1));
+      right: 0;
+      transform: rotateY(90deg) translateZ(14px);
+    }
+    .datav-bar-col .left {
+      width: 16px;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,170,220,0.2), rgba(0,212,255,0.05));
+      left: 0;
+      transform: rotateY(-90deg) translateZ(14px);
+    }
+    .datav-bar-col.purple .front { background: linear-gradient(180deg, #7b2fff, rgba(123,47,255,0.3)); }
+    .datav-bar-col.purple .right { background: linear-gradient(180deg, rgba(123,47,255,0.6), rgba(123,47,255,0.1)); }
+    .datav-bar-col.green .front { background: linear-gradient(180deg, #00ff88, rgba(0,255,136,0.3)); }
+    .datav-bar-col.green .right { background: linear-gradient(180deg, rgba(0,255,136,0.6), rgba(0,255,136,0.1)); }
+    .datav-bar-value {
+      font-size: 10px;
+      color: #00d4ff;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 2px;
+      text-shadow: 0 0 8px rgba(0,212,255,0.5);
+    }
+    .datav-bar-label {
+      font-size: 11px;
+      color: #8899bb;
+      margin-top: 8px;
+      transform: rotateX(-15deg);
+    }
+
+    /* 环形仪表 */
+    .datav-ring-row {
+      grid-column: span 5;
+      display: flex;
+      flex-direction: column;
+    }
+    .datav-ring-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+    .datav-ring-gauge {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .datav-ring-gauge svg {
+      position: absolute;
+      inset: 0;
+      filter: drop-shadow(0 0 10px rgba(0,212,255,0.3));
+    }
+    .datav-ring-gauge .datav-ring-value {
+      font-size: 22px;
+      font-weight: 700;
+      z-index: 2;
+    }
+    .datav-ring-gauge .datav-ring-value.cyan {
+      background: linear-gradient(135deg, #00d4ff, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-ring-gauge .datav-ring-value.purple {
+      background: linear-gradient(135deg, #7b2fff, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-ring-gauge .datav-ring-value.green {
+      background: linear-gradient(135deg, #00ff88, #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .datav-ring-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #8899bb;
+      white-space: nowrap;
+    }
+    .datav-ring-center {
+      position: absolute;
+      inset: 30%;
+      border-radius: 50%;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.15);
+      z-index: 1;
+    }
+    @keyframes datav-ring-spin {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -220; }
+    }
+
+    /* 实时记录表 */
+    .datav-tx-row {
+      grid-column: 1 / -1;
+    }
+    .datav-tx-table-wrap {
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(0,212,255,0.1);
+      margin-top: 12px;
+    }
+    .datav-tx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .datav-tx-table thead tr {
+      background: rgba(0,212,255,0.08);
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+    }
+    .datav-tx-table th {
+      padding: 8px 16px;
+      color: #8899bb;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .datav-tx-table tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.2s;
+    }
+    .datav-tx-table tbody tr:nth-child(even) {
+      background: rgba(0,212,255,0.03);
+    }
+    .datav-tx-table tbody tr:hover {
+      background: rgba(0,212,255,0.06);
+    }
+    .datav-tx-table td {
+      padding: 8px 16px;
+      color: #e8f4fd;
+    }
+    .datav-tx-table td:first-child {
+      color: #00d4ff;
+      font-weight: 600;
+    }
+    .datav-tx-table td:nth-child(2) {
+      color: #8899bb;
+    }
+    .datav-tx-table td:nth-child(3) {
+      color: #7b2fff;
+      font-weight: 600;
+    }
+    .datav-tx-table td:nth-child(4) {
+      color: #00ff88;
+      font-weight: 700;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .datav-tx-liter {
+      animation: datav-tx-shimmer 2s ease-in-out infinite;
+    }
+    @keyframes datav-tx-shimmer {
+      0%,100% { text-shadow: 0 0 8px rgba(0,255,136,0.4); }
+      50% { text-shadow: 0 0 16px rgba(0,255,136,0.8), 0 0 30px rgba(0,255,136,0.3); }
+    }
+
+    /* 大屏底部 */
+    .datav-footer {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-top: 1px solid rgba(0,212,255,0.08);
+      margin-top: 8px;
+    }
+    .datav-footer-text {
+      font-size: 11px;
+      color: #8899bb;
+      letter-spacing: 0.05em;
+    }
+    .datav-footer-time {
+      font-size: 11px;
+      color: #8899bb;
+    }
+
+    /* 大屏内响应式 */
+    @media (max-width: 1100px) {
+      .datav-kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .datav-chart-3d { grid-column: 1 / -1; }
+      .datav-ring-row { grid-column: 1 / -1; flex-direction: row; }
+    }
+    @media (max-width: 768px) {
+      .showcase-section { padding: 40px 12px; }
+      .showcase-section h2 { font-size: 32px; margin-bottom: 12px; }
+      .showcase-subtitle { font-size: 13px; margin-bottom: 24px; }
+      .datav-kpi-row { grid-template-columns: 1fr 1fr; }
+      .datav-bar-scene { height: 200px; }
+      .datav-kpi-value { font-size: 13px; }
+      .datav-ring-panel { flex-wrap: wrap; }
+    }
+    @media (max-width: 480px) {
+      .showcase-section h2 { font-size: 26px; }
+    }
+
+    .projects-section { padding: 100px 50px; background: #141322; }
+    .projects-section h2 { text-align: center; font-size: 48px; margin-bottom: 60px; color: #ffffff; }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 40px; max-width: 1600px; margin: 0 auto; }
+    .project-card { position: relative; border-radius: 20px; overflow: hidden; cursor: pointer; opacity: 0; transform: translateY(50px); transition: transform 0.5s; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+    .project-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102,126,234,0.3); }
+    .project-card img { width: 100%; height: 300px; object-fit: cover; transition: transform 0.7s; }
+    .project-card:hover img { transform: scale(1.05); }
+    .project-info { padding: 30px; }
+    .project-title { font-size: 24px; font-weight: 700; color: #ffffff; margin-bottom: 10px; }
+    .project-desc { font-size: 15px; line-height: 1.6; color: #b0b0b0; }
+
+    .skills-section { padding: 100px 50px; background: #0a0a0a; }
+    .skills-section h2 { text-align: center; font-size: 48px; margin-bottom: 60px; color: #ffffff; }
+    .software-logos { display: flex; justify-content: center; gap: 40px; margin-bottom: 80px; flex-wrap: wrap; }
+    .logo-card { display: flex; flex-direction: column; align-items: center; gap: 20px; opacity: 0; transform: translateY(50px); }
+    .logo-icon { width: 150px; height: 150px; background: rgba(255,255,255,0.05); border: 2px solid rgba(102,126,234,0.3); border-radius: 20px; display: flex; justify-content: center; align-items: center; padding: 30px; box-shadow: 0 0 20px rgba(102,126,234,0.2), inset 0 0 20px rgba(102,126,234,0.05); transition: all 0.5s ease; position: relative; overflow: hidden; }
+    .logo-icon::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, #667eea, #764ba2, #667eea); border-radius: 20px; z-index: -1; opacity: 0; transition: opacity 0.5s; }
+    .logo-card:hover .logo-icon { transform: translateY(-10px) scale(1.05); box-shadow: 0 10px 40px rgba(102,126,234,0.4), 0 0 30px rgba(102,126,234,0.3), inset 0 0 30px rgba(102,126,234,0.1); border-color: rgba(102,126,234,0.6); }
+    .logo-card:hover .logo-icon::before { opacity: 1; }
+    .logo-icon svg { width: 80px; height: 80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); transition: transform 0.5s; }
+    .logo-card:hover .logo-icon svg { transform: scale(1.1); }
+    .logo-name { font-size: 18px; font-weight: 600; color: #ffffff; letter-spacing: 1px; }
+    .stats-container { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+    .stat-item { text-align: center; opacity: 0; transform: translateY(30px); }
+    .stat-number { font-size: 72px; font-weight: 900; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 10px; }
+    .stat-label { font-size: 20px; color: #b0b0b0; margin-bottom: 5px; }
+    .stat-unit { font-size: 24px; font-weight: 700; color: #667eea; }
+
+    .pin-section { padding: 100px 50px; background: #141322; position: relative; }
+    .pin-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 50px; }
+    .pin-text { flex: 1; }
+    .pin-text h2 { font-size: 48px; margin-bottom: 30px; opacity: 0; }
+    .pin-text p { font-size: 18px; line-height: 1.8; color: #b0b0b0; opacity: 0; }
+    .pin-visual { flex: 1; height: 400px; display: flex; justify-content: center; align-items: center; position: relative; }
+    .rotating-container { position: relative; width: 200px; height: 200px; opacity: 0; }
+    .rotating-box { width: 200px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; }
+    .design-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 48px; font-weight: 900; color: #ffffff; z-index: 10; text-shadow: 0 2px 10px rgba(0,0,0,0.3); pointer-events: none; }
+
+    .reveal-section { padding: 150px 50px; background: #0a0a0a; text-align: center; }
+    .reveal-text { font-size: 60px; font-weight: 900; line-height: 1.5; opacity: 0; }
+    .highlight { color: #667eea; }
+
+    /* ==================== Glass Contact Buttons ==================== */
+    .contact-section {
+      padding: 100px 50px;
+      text-align: center;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 100%, rgba(180, 80, 255, 0.75) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 40% at 50% 85%,  rgba(120, 40, 200, 0.5)  0%, transparent 65%),
+        #0a0a0f;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-section h2 { font-size: 48px; margin-bottom: 60px; color: #ffffff; }
+    .contact-info {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* Glass pill button */
+    .btn-glass {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      padding: 0;
+      outline: none;
+    }
+    .btn-glass .pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 56px;
+      min-width: 56px;
+      width: 56px;
+      padding: 0;
+      border-radius: 100px;
+      overflow: hidden;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(200, 160, 255, 0.10) 50%,
+        rgba(255, 255, 255, 0.06) 100%
+      );
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+        0 4px 24px rgba(140, 40, 255, 0.25),
+        0 1px 8px rgba(0, 0, 0, 0.4);
+      transition:
+        width 520ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 300ms ease,
+        padding 520ms cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: width;
+      z-index: 1;
+    }
+    /* Glass highlight */
+    .btn-glass .pill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      width: 80%;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+      border-radius: 0 0 50% 50%;
+      pointer-events: none;
+    }
+    /* Icon */
+    .btn-glass .pill-icon {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      transition:
+        left 520ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-glass .pill-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: rgba(255, 255, 255, 0.92);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      filter: drop-shadow(0 0 4px rgba(220, 180, 255, 0.6));
+      transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-glass .pill-icon svg.icon-fill {
+      stroke: none;
+      fill: rgba(255, 255, 255, 0.92);
+    }
+    /* Label — invisible spacer + visible text */
+    .btn-glass .pill-label {
+      display: inline-block;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 8px rgba(160, 80, 255, 0.5);
+      opacity: 0;
+      margin-left: 52px;
+      padding-right: 24px;
+      transition: opacity 200ms ease 0ms;
+    }
+    /* Hover */
+    .btn-glass:hover .pill,
+    .btn-glass:focus-visible .pill {
+      width: auto;
+      padding: 0 12px 0 0;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.40),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.10),
+        0 8px 40px rgba(160, 60, 255, 0.45),
+        0 2px 12px rgba(0, 0, 0, 0.5);
+    }
+    .btn-glass:hover .pill-icon,
+    .btn-glass:focus-visible .pill-icon {
+      left: 28px;
+      transform: translateX(-50%);
+    }
+    .btn-glass:hover .pill-label,
+    .btn-glass:focus-visible .pill-label {
+      opacity: 1;
+      transition-delay: 180ms;
+    }
+    /* Active */
+    .btn-glass:active .pill {
+      transform: scale(0.97);
+      transition: transform 100ms ease, width 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .footer { padding: 50px; background: #141322; text-align: center; color: #666; font-size: 14px; }
+
+    .scroll-progress { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); z-index: 9999; }
+
+    /* 响应式 */
+    @media (max-width: 992px) {
+      .navbar { padding: 15px 30px; }
+      .navbar ul { gap: 15px; }
+      .hero-subtitle { font-size: 3rem; }
+      .toggle-wrapper { width: 300px; height: 90px; }
+      .toggle-thumb { width: 74px; height: 74px; }
+      .toggle-thumb.right { transform: translateX(218px); }
+      .toggle-label { font-size: 1.3rem; }
+      .toggle-labels { padding: 0 40px; }
+      .toggle-icon { width: 32px; height: 32px; }
+      .profile-name { font-size: 1.8rem; }
+      .cards-container { grid-template-columns: 1fr; }
+      .pin-content { flex-direction: column; gap: 30px; }
+      .pin-visual { height: 300px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .software-logos { gap: 20px; }
+      .logo-icon { width: 120px; height: 120px; padding: 20px; }
+      .logo-icon svg { width: 60px; height: 60px; }
+      .stats-container { gap: 40px; }
+      .stat-number { font-size: 56px; }
+      .reveal-text { font-size: 48px; }
+    }
+    @media (max-width: 768px) {
+      .navbar { flex-direction: column; padding: 15px 20px; }
+      .navbar h1 { margin-bottom: 10px; }
+      .navbar ul { flex-wrap: wrap; justify-content: center; gap: 10px 15px; }
+      .hero-title { font-size: 1rem; }
+      .hero-subtitle { font-size: 2.8rem; margin-bottom: 2.5rem; }
+      .toggle-wrapper { width: 280px; height: 85px; margin-bottom: 2.5rem; }
+      .toggle-thumb { width: 69px; height: 69px; top: 8px; }
+      .toggle-thumb.right { transform: translateX(203px); }
+      .toggle-thumb.left { transform: translateX(8px); }
+      .toggle-label { font-size: 1.2rem; }
+      .toggle-labels { padding: 0 35px; }
+      .toggle-icon { width: 30px; height: 30px; }
+      .profile-name { font-size: 1.6rem; }
+      .profile-title { font-size: 0.95rem; }
+      .profile-skills { font-size: 0.82rem; }
+      .profile-motto { font-size: 0.78rem; }
+      .cards-section, .timeline-section, .projects-section, .skills-section, .pin-section, .reveal-section, .contact-section { padding: 60px 20px; }
+      .cards-section h2, .timeline-section h2, .projects-section h2, .skills-section h2, .contact-section h2 { font-size: 36px; margin-bottom: 40px; }
+      .timeline::before { left: 20px; }
+      .timeline-item::before { left: 20px; }
+      .timeline-item.left .timeline-content, .timeline-item.right .timeline-content { margin-left: 50px; margin-right: 0; text-align: left; }
+      .pin-visual { height: 250px; }
+      .rotating-container { width: 150px; height: 150px; }
+      .rotating-box { width: 150px; height: 150px; }
+      .design-text { font-size: 36px; }
+      .software-logos { gap: 15px; }
+      .logo-card { gap: 15px; }
+      .logo-icon { width: 100px; height: 100px; padding: 15px; }
+      .logo-icon svg { width: 50px; height: 50px; }
+      .logo-name { font-size: 16px; }
+      .stats-container { flex-direction: column; gap: 30px; }
+      .reveal-text { font-size: 36px; }
+      .contact-info { gap: 20px; }
+      .btn-glass .pill { height: 48px; min-width: 48px; width: 48px; }
+      .btn-glass .pill-icon { width: 28px; height: 28px; }
+      .btn-glass .pill-icon svg { width: 16px; height: 16px; }
+      .btn-glass .pill-label { font-size: 12px; margin-left: 46px; padding-right: 18px; }
+      .btn-glass:hover .pill-icon { left: 24px; }
+    }
+    @media (max-width: 480px) {
+      .hero-subtitle { font-size: 2.2rem; }
+      .toggle-wrapper { width: 260px; height: 80px; }
+      .toggle-thumb { width: 64px; height: 64px; }
+      .toggle-thumb.right { transform: translateX(188px); }
+      .toggle-label { font-size: 1.1rem; }
+      .toggle-labels { padding: 0 30px; }
+      .toggle-icon { width: 28px; height: 28px; }
+      .profile-name { font-size: 1.5rem; }
+      .cards-section h2, .timeline-section h2, .projects-section h2, .skills-section h2, .contact-section h2 { font-size: 28px; }
+      .card { padding: 30px; }
+      .card h3 { font-size: 24px; }
+      .project-card img { height: 200px; }
+      .project-info { padding: 20px; }
+      .project-title { font-size: 20px; }
+      .project-desc { font-size: 14px; }
+      .rotating-container { width: 120px; height: 120px; }
+      .rotating-box { width: 120px; height: 120px; }
+      .design-text { font-size: 28px; }
+      .software-logos { gap: 10px; }
+      .logo-icon { width: 80px; height: 80px; padding: 10px; }
+      .logo-icon svg { width: 40px; height: 40px; }
+      .logo-name { font-size: 14px; }
+      .stat-number { font-size: 48px; }
+      .stat-label { font-size: 18px; }
+      .reveal-text { font-size: 28px; }
+      .footer { padding: 30px 20px; font-size: 12px; }
+      .contact-info { gap: 16px; }
+      .btn-glass .pill { height: 44px; min-width: 44px; width: 44px; }
+      .btn-glass .pill-icon { width: 24px; height: 24px; }
+      .btn-glass .pill-icon svg { width: 14px; height: 14px; }
+      .btn-glass .pill-label { font-size: 11px; margin-left: 40px; padding-right: 14px; }
+      .btn-glass:hover .pill-icon { left: 20px; }
+    }
+  
+    /* ==================== Glass Cards Carousel (设计理念) ==================== */
+    .glass-carousel-section {
+      padding: 120px 50px;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 30%, #0d0d2b 60%, #050514 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-carousel-section .section-title {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 60px;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-weight: 700;
+    }
+
+    .glass-carousel-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-cards-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-card-item {
+      position: absolute;
+      width: 300px;
+      height: 400px;
+      border-radius: 24px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      user-select: none;
+      background: rgba(30, 30, 70, 0.25);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(120, 120, 220, 0.2);
+      box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-card-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1.5px;
+      background: linear-gradient(180deg, 
+        rgba(180, 180, 255, 0.5) 0%, 
+        rgba(120, 120, 200, 0.15) 20%,
+        rgba(80, 80, 160, 0) 50%,
+        rgba(60, 60, 120, 0.1) 80%,
+        rgba(40, 40, 80, 0.2) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.7;
+      transition: opacity 0.4s ease;
+    }
+
+    .glass-card-item:hover::before {
+      opacity: 1;
+    }
+
+    .glass-card-item::after {
+      content: '';
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      width: 60px;
+      height: 120px;
+      background-image: radial-gradient(circle, rgba(150, 150, 220, 0.3) 1.5px, transparent 1.5px);
+      background-size: 10px 10px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .glass-card-item .card-label {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 8px;
+      background: rgba(80, 80, 160, 0.2);
+      border: 1px solid rgba(120, 120, 200, 0.25);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(180, 180, 240, 0.8);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .glass-card-item .card-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+      margin-top: 16px;
+    }
+
+    .glass-card-item .card-image {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+      position: relative;
+      background: rgba(20, 20, 50, 0.5);
+      border: 1px solid rgba(100, 100, 180, 0.15);
+    }
+
+    .glass-card-item .card-image-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .glass-card-item .card-desc {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', sans-serif;
+      font-size: 14px;
+      color: rgba(180, 180, 220, 0.65);
+      line-height: 1.8;
+    }
+
+    /* 图案 */
+    .pattern-fingerprint { width: 100px; height: 100px; }
+    .pattern-fingerprint svg { width: 100%; height: 100%; opacity: 0.6; }
+    .pattern-wave { width: 120px; height: 80px; position: relative; overflow: hidden; }
+    .pattern-wave::before { content: ''; position: absolute; width: 200%; height: 200%; background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(100,150,255,0.15) 4px, rgba(100,150,255,0.15) 8px); animation: wave-slide 3s linear infinite; }
+    @keyframes wave-slide { 0% { transform: translate(-50%,-50%); } 100% { transform: translate(0,0); } }
+    .pattern-grid { width: 100px; height: 100px; background-image: linear-gradient(rgba(120,160,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(120,160,255,0.2) 1px, transparent 1px); background-size: 20px 20px; animation: grid-pulse 2s ease-in-out infinite; }
+    @keyframes grid-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+
+    /* 位置 */
+    .glass-card-item.position-center { transform: translateX(0) scale(1.5); z-index: 10; opacity: 1; }
+    .glass-card-item.position-left { transform: translateX(-340px) scale(0.82); z-index: 5; opacity: 1; }
+    .glass-card-item.position-right { transform: translateX(340px) scale(0.82); z-index: 5; opacity: 1; }
+    .glass-card-item.position-hidden-left { transform: translateX(-600px) scale(0.6); z-index: 0; opacity: 0; }
+    .glass-card-item.position-hidden-right { transform: translateX(600px) scale(0.6); z-index: 0; opacity: 0; }
+
+    .glass-carousel-hint {
+      text-align: center;
+      margin-top: 30px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      font-size: 12px;
+      color: rgba(150, 150, 200, 0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* 背景光效 */
+    .glass-bg-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(80, 60, 180, 0.15) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass-bg-glow-1 { top: -150px; left: -150px; }
+    .glass-bg-glow-2 { bottom: -150px; right: -150px; background: radial-gradient(circle, rgba(60, 40, 140, 0.1) 0%, transparent 70%); }
+
+    @media (max-width: 800px) {
+      .glass-carousel-container { height: 400px; }
+      .glass-card-item { width: 220px; height: 300px; padding: 20px 16px; }
+      .glass-card-item .card-title { font-size: 20px; }
+      .glass-card-item .card-desc { font-size: 11px; }
+      .glass-card-item .card-image { height: 90px; margin: 12px 0; }
+      .glass-card-item.position-center { transform: translateX(0) scale(1.35); }
+      .glass-card-item.position-left { transform: translateX(-200px) scale(0.82); }
+      .glass-card-item.position-right { transform: translateX(200px) scale(0.82); }
+      .glass-carousel-section .section-title { font-size: 32px; }
+    }
+
+    /* ==================== Spotlight Navigation ==================== */
+    .navbar {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      padding: 0;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      display: block;
+      width: auto;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    .nav-container {
+      position: relative;
+      padding: 4px;
+      background: rgba(30, 15, 60, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 60px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 80px rgba(124, 58, 237, 0.15),
+        inset 0 1px 1px rgba(255,255,255,0.05);
+    }
+
+    /* 确保 navbar 外层没有任何背景 */
+    .navbar * {
+      background-clip: padding-box;
+    }
+
+    .nav-container::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 64px;
+      background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.4), 
+        rgba(124, 58, 237, 0.2), 
+        rgba(139, 92, 246, 0.4));
+      z-index: -1;
+      opacity: 0.5;
+      filter: blur(20px);
+      animation: neon-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes neon-pulse {
+      0%, 100% { opacity: 0.4; filter: blur(20px); }
+      50% { opacity: 0.7; filter: blur(28px); }
+    }
+
+    .nav-track {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .lamp-bar {
+      position: absolute;
+      top: -2px;
+      height: 5px;
+      background: linear-gradient(90deg, 
+        rgba(167, 139, 250, 0.8), 
+        rgba(139, 92, 246, 0.95), 
+        rgba(167, 139, 250, 0.8));
+      border-radius: 3px;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 10;
+      box-shadow: 
+        0 0 15px rgba(139, 92, 246, 0.8),
+        0 0 40px rgba(124, 58, 237, 0.5),
+        0 0 80px rgba(124, 58, 237, 0.3);
+    }
+
+    .lamp-beam {
+      position: absolute;
+      top: 3px;
+      height: calc(100% + 30px);
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .lamp-beam::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        rgba(139, 92, 246, 0.3) 0%, 
+        rgba(124, 58, 237, 0.15) 25%,
+        rgba(109, 40, 217, 0.06) 50%,
+        transparent 80%);
+      clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+    }
+
+    .nav-item {
+      position: relative;
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(180, 170, 210, 0.4);
+      cursor: pointer;
+      transition: color 0.4s ease;
+      z-index: 2;
+      white-space: nowrap;
+      user-select: none;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    }
+
+    .nav-item:hover:not(.active) {
+      color: rgba(180, 170, 210, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      .nav-item { padding: 10px 12px; font-size: 11px; }
+      .nav-container { border-radius: 40px; }
+      .nav-container::before { border-radius: 44px; }
+    }
+</style>
+</head>
+<body>
+  <div class="scroll-progress"></div>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-track" id="navTrack">
+        <div class="lamp-bar" id="lampBar"></div>
+        <div class="lamp-beam" id="lampBeam"></div>
+        <div class="nav-item active" data-index="0" data-target="home">首页</div>
+        <div class="nav-item" data-index="1" data-target="concepts">设计理念</div>
+        <div class="nav-item" data-index="2" data-target="journey">职业历程</div>
+        <div class="nav-item" data-index="3" data-target="showcase">案例展示</div>
+        <div class="nav-item" data-index="4" data-target="projects">精选项目</div>
+        <div class="nav-item" data-index="5" data-target="skills">设计技能</div>
+        <div class="nav-item" data-index="6" data-target="process">设计过程</div>
+        <div class="nav-item" data-index="7" data-target="contact">联系</div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero dream-mode" id="home">
+    <div class="sun-rays"></div>
+    <div class="particles" id="particles"></div>
+    <div class="hero-container">
+      <div class="hero-title">用设计将梦想变成现实</div>
+      <div class="hero-subtitle">Dream by Design</div>
+      <div class="toggle-wrapper" id="toggleWrapper">
+        <div class="toggle-track" id="toggleTrack">
+          <div class="glow-layer dream"></div>
+          <div class="glow-layer design"></div>
+          <div class="toggle-labels">
+            <span class="toggle-label dream">Dream</span>
+            <span class="toggle-label design">Design</span>
+          </div>
+        </div>
+        <div class="toggle-thumb left" id="toggleThumb">
+          <div class="toggle-icon" id="icon">
+            <svg id="moonIcon" viewBox="0 0 24 24" style="display: block;">
+              <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/>
+            </svg>
+            <svg id="sunIcon" viewBox="0 0 24 24" style="display: none;">
+              <circle cx="12" cy="12" r="5"/>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="profile">
+        <div class="profile-name">周明</div>
+        <div class="profile-title">8年UI设计师 / 鲁迅美术学院</div>
+        <div class="profile-skills">熟练Figma、Sketch、PS，交互原型+UI视觉+规范迭代。</div>
+        <div class="profile-motto">AI赋能设计，沉淀方法提效，审美成就专业。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="glass-carousel-section" id="concepts">
+    <div class="glass-bg-glow glass-bg-glow-1"></div>
+    <div class="glass-bg-glow glass-bg-glow-2"></div>
+    <h2 class="section-title">设计理念</h2>
+    <div class="glass-carousel-container">
+      <div class="glass-cards-track" id="glassCardsTrack"></div>
+    </div>
+    <div class="glass-carousel-hint">Click to navigate</div>
+  </section>
+
+  <section class="timeline-section" id="journey">
+    <h2>职业历程</h2>
+    <div class="timeline">
+      <div class="timeline-item left"><div class="timeline-content"><div class="timeline-year">2014</div><div class="timeline-title">鲁迅美术学院毕业</div><div class="timeline-desc">奠定扎实的美学基础</div></div></div>
+      <div class="timeline-item right"><div class="timeline-content"><div class="timeline-year">2017 - 2019</div><div class="timeline-title">一呼医生（北京）科技有限公司</div><div class="timeline-desc">将用户体验与行业场景深度融合</div></div></div>
+      <div class="timeline-item left"><div class="timeline-content"><div class="timeline-year">2019 - 2021</div><div class="timeline-title">秋葵科技有限公司</div><div class="timeline-desc">将品牌理念融入每一个设计细节</div></div></div>
+      <div class="timeline-item right"><div class="timeline-content"><div class="timeline-year">2021 - 2022</div><div class="timeline-title">正大卜蜂集团</div><div class="timeline-desc">大型企业数字化产品的设计经验</div></div></div>
+      <div class="timeline-item left"><div class="timeline-content"><div class="timeline-year">2022 - 2025</div><div class="timeline-title">恒亿数科（北京）有限公司</div><div class="timeline-desc">融合AI技术与设计创新，用数据驱动设计决策</div></div></div>
+    </div>
+  </section>
+
+  <section class="showcase-section" id="showcase">
+    <h2>案例展示</h2>
+    <p class="showcase-subtitle">加油站数据监控平台 · 信息可视化设计</p>
+    <div class="datav-wrap">
+      <div class="datav-dashboard">
+        <!-- KPI 顶栏 -->
+        <div class="datav-kpi-row">
+          <div class="datav-card">
+            <div class="datav-kpi-label"><span class="datav-kpi-indicator cyan"></span>昨日加油数据</div>
+            <div class="datav-kpi-value" style="font-size:14px;line-height:1.6"><span class="num-cyan">汽油 2163单 8024322.4元<br>柴油 265单 500808.67元</span></div>
+            <div class="datav-kpi-sub">含92/95/98号汽油</div>
+          </div>
+          <div class="datav-card">
+            <div class="datav-kpi-label"><span class="datav-kpi-indicator purple"></span>合作加油站点</div>
+            <div class="datav-kpi-value"><span class="num-purple datav-counter" data-target="6040" data-suffix="个">0个</span></div>
+            <div class="datav-kpi-sub">覆盖全国 <span>31省</span></div>
+          </div>
+          <div class="datav-card">
+            <div class="datav-kpi-label"><span class="datav-kpi-indicator green"></span>今日总单数</div>
+            <div class="datav-kpi-value"><span class="num-green datav-counter" data-target="1913" data-suffix="">0</span></div>
+            <div class="datav-kpi-sub">总升数 <span>72149.29L</span></div>
+          </div>
+          <div class="datav-card">
+            <div class="datav-kpi-label"><span class="datav-kpi-indicator orange"></span>本月总单数</div>
+            <div class="datav-kpi-value"><span class="num-orange datav-counter" data-target="69770" data-suffix="">0</span></div>
+            <div class="datav-kpi-sub">总升数 <span>2717258.89L</span></div>
+          </div>
+        </div>
+
+        <!-- 3D 柱状图 + 环形仪表 -->
+        <div class="datav-card datav-chart-3d">
+          <div class="datav-chart-title">汽油、柴油本月零售数量</div>
+          <div class="datav-bar-scene">
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col" style="height:160px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col purple" style="height:120px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">2.8亿</div><div class="datav-bar-label">华北</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col green" style="height:220px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col" style="height:180px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">4.2亿</div><div class="datav-bar-label">华东</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col purple" style="height:190px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col green" style="height:140px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">3.6亿</div><div class="datav-bar-label">华南</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col" style="height:150px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col purple" style="height:100px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">2.4亿</div><div class="datav-bar-label">华中</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col green" style="height:170px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col" style="height:130px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">3.1亿</div><div class="datav-bar-label">西南</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col" style="height:90px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col purple" style="height:70px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">1.5亿</div><div class="datav-bar-label">西北</div></div>
+            <div class="datav-bar-group"><div class="datav-bar-col-wrap"><div class="datav-bar-col purple" style="height:110px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div><div class="datav-bar-col green" style="height:80px"><div class="face front"></div><div class="face top"></div><div class="face right"></div><div class="face left"></div></div></div><div class="datav-bar-value">1.8亿</div><div class="datav-bar-label">东北</div></div>
+          </div>
+        </div>
+
+        <!-- 环形仪表 -->
+        <div class="datav-card datav-ring-row">
+          <div class="datav-chart-title">核心运营指标</div>
+          <div class="datav-ring-panel">
+            <div class="datav-ring-gauge">
+              <svg viewBox="0 0 140 140" fill="none">
+                <defs><linearGradient id="datavGradCyan" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#00ff88"/></linearGradient></defs>
+                <circle cx="70" cy="70" r="56" stroke="rgba(255,255,255,0.06)" stroke-width="10" stroke-linecap="round"/>
+                <circle cx="70" cy="70" r="56" stroke="url(#datavGradCyan)" stroke-width="10" stroke-linecap="round" stroke-dasharray="352" id="datavRing1" style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:352"/>
+                <circle cx="70" cy="70" r="56" stroke="rgba(0,212,255,0.4)" stroke-width="10" stroke-dasharray="40 312" style="transform:rotate(-90deg);transform-origin:center;animation:datav-ring-spin 4s linear infinite"/>
+              </svg>
+              <div class="datav-ring-center"></div>
+              <div class="datav-ring-value cyan" id="datavRingVal1">0%</div>
+              <div class="datav-ring-label">新客户</div>
+            </div>
+            <div class="datav-ring-gauge">
+              <svg viewBox="0 0 140 140" fill="none">
+                <defs><linearGradient id="datavGradPurple" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7b2fff"/><stop offset="100%" stop-color="#ff2d6b"/></linearGradient></defs>
+                <circle cx="70" cy="70" r="56" stroke="rgba(255,255,255,0.06)" stroke-width="10" stroke-linecap="round"/>
+                <circle cx="70" cy="70" r="56" stroke="url(#datavGradPurple)" stroke-width="10" stroke-linecap="round" stroke-dasharray="352" id="datavRing2" style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:352"/>
+                <circle cx="70" cy="70" r="56" stroke="rgba(123,47,255,0.4)" stroke-width="10" stroke-dasharray="40 312" style="transform:rotate(-90deg);transform-origin:center;animation:datav-ring-spin 6s linear infinite reverse"/>
+              </svg>
+              <div class="datav-ring-center"></div>
+              <div class="datav-ring-value purple" id="datavRingVal2">0%</div>
+              <div class="datav-ring-label">老客户</div>
+            </div>
+            <div class="datav-ring-gauge">
+              <svg viewBox="0 0 140 140" fill="none">
+                <defs><linearGradient id="datavGradGreen" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ff88"/><stop offset="100%" stop-color="#00d4ff"/></linearGradient></defs>
+                <circle cx="70" cy="70" r="56" stroke="rgba(255,255,255,0.06)" stroke-width="10" stroke-linecap="round"/>
+                <circle cx="70" cy="70" r="56" stroke="url(#datavGradGreen)" stroke-width="10" stroke-linecap="round" stroke-dasharray="352" id="datavRing3" style="transform:rotate(-90deg);transform-origin:center;stroke-dashoffset:352"/>
+                <circle cx="70" cy="70" r="56" stroke="rgba(0,255,136,0.4)" stroke-width="10" stroke-dasharray="40 312" style="transform:rotate(-90deg);transform-origin:center;animation:datav-ring-spin 5s linear infinite"/>
+              </svg>
+              <div class="datav-ring-center"></div>
+              <div class="datav-ring-value green" id="datavRingVal3">0%</div>
+              <div class="datav-ring-label">本周销量占比</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 实时加油记录 -->
+        <div class="datav-card datav-tx-row">
+          <div class="datav-chart-title">实时加油记录</div>
+          <div class="datav-tx-table-wrap">
+            <table class="datav-tx-table">
+              <thead><tr><th>时间</th><th>站点</th><th>种类</th><th style="text-align:right">加油升数</th></tr></thead>
+              <tbody>
+                <tr><td>17:32:18</td><td>北京朝阳站A</td><td>92号汽油</td><td class="datav-tx-liter" data-target="45.82">0.00L</td></tr>
+                <tr><td>17:31:55</td><td>上海浦东站C</td><td>95号汽油</td><td class="datav-tx-liter" data-target="38.50">0.00L</td></tr>
+                <tr><td>17:31:42</td><td>广州天河站B</td><td>0号柴油</td><td class="datav-tx-liter" data-target="120.30">0.00L</td></tr>
+                <tr><td>17:31:20</td><td>深圳南山站A</td><td>92号汽油</td><td class="datav-tx-liter" data-target="52.10">0.00L</td></tr>
+                <tr><td>17:30:58</td><td>杭州西湖站D</td><td>98号汽油</td><td class="datav-tx-liter" data-target="28.75">0.00L</td></tr>
+                <tr><td>17:30:35</td><td>成都锦江站A</td><td>92号汽油</td><td class="datav-tx-liter" data-target="41.20">0.00L</td></tr>
+                <tr><td>17:30:12</td><td>南京鼓楼站B</td><td>95号汽油</td><td class="datav-tx-liter" data-target="36.60">0.00L</td></tr>
+                <tr><td>17:29:48</td><td>武汉武昌站C</td><td>0号柴油</td><td class="datav-tx-liter" data-target="95.40">0.00L</td></tr>
+                <tr><td>17:29:25</td><td>西安雁塔站A</td><td>92号汽油</td><td class="datav-tx-liter" data-target="48.90">0.00L</td></tr>
+                <tr><td>17:29:03</td><td>重庆渝中站B</td><td>95号汽油</td><td class="datav-tx-liter" data-target="33.70">0.00L</td></tr>
+                <tr><td>17:28:40</td><td>天津滨海站C</td><td>92号汽油</td><td class="datav-tx-liter" data-target="55.20">0.00L</td></tr>
+                <tr><td>17:28:17</td><td>苏州工业园站A</td><td>98号汽油</td><td class="datav-tx-liter" data-target="25.50">0.00L</td></tr>
+                <tr><td>17:27:54</td><td>青岛黄岛站D</td><td>0号柴油</td><td class="datav-tx-liter" data-target="88.60">0.00L</td></tr>
+                <tr><td>17:27:31</td><td>长沙岳麓站B</td><td>92号汽油</td><td class="datav-tx-liter" data-target="42.30">0.00L</td></tr>
+                <tr><td>17:27:08</td><td>郑州金水站A</td><td>95号汽油</td><td class="datav-tx-liter" data-target="37.80">0.00L</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="datav-footer">
+          <span class="datav-footer-text">加油站数据监控平台  |  实时数据</span>
+          <span class="datav-footer-time" id="datavClock"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects-section" id="projects">
+    <h2>精选项目</h2>
+    <div class="projects-grid">
+      <div class="project-card"><img src="images/project-1.png" alt="金融·财商·教育"><div class="project-info"><div class="project-title">金融·财商·教育 / 移动端APP</div><div class="project-desc">产品重构 体验优化，提升核心交互触点点击率，激活存量用户互动意愿，加强目标商户的黏性，更好的建立长期关系</div></div></div>
+      <div class="project-card"><img src="images/project-2.png" alt="运营活动"><div class="project-info"><div class="project-title">运营活动 / 移动端APP</div><div class="project-desc">情感化设计，金融产品与情感体验完美结合，助力心愿达成</div></div></div>
+      <div class="project-card"><img src="images/project-3.png" alt="生鲜电商"><div class="project-info"><div class="project-title">生鲜电商 / 移动端APP</div><div class="project-desc">完善界面功能，优化层级，使界面信息一目了然，快速找到各个功能入口，进入到二级页面</div></div></div>
+      <div class="project-card"><img src="images/project-4.jpg" alt="大屏·后台界面"><div class="project-info"><div class="project-title">大屏 · 后台 / 网页端界面</div><div class="project-desc">以用户为中心，保持界面简单直观，避免冗余元素，聚焦核心功能与信息</div></div></div>
+      <div class="project-card"><img src="images/project-5.jpg" alt="大屏·后台界面"><div class="project-info"><div class="project-title">大屏 · 后台 / 网页端界面</div><div class="project-desc">以用户为中心，保持界面简单直观，避免冗余元素，聚焦核心功能与信息</div></div></div>
+      <div class="project-card"><img src="images/project-6.jpg" alt="大屏·后台界面"><div class="project-info"><div class="project-title">大屏 · 后台 / 网页端界面</div><div class="project-desc">以用户为中心，保持界面简单直观，避免冗余元素，聚焦核心功能与信息</div></div></div>
+      <div class="project-card"><img src="images/project-7.png" alt="大屏·后台界面"><div class="project-info"><div class="project-title">大屏 · 后台 / 网页端界面</div><div class="project-desc">以用户为中心，保持界面简单直观，避免冗余元素，聚焦核心功能与信息</div></div></div>
+      <div class="project-card"><img src="images/project-8.png" alt="线上·线下平面设计"><div class="project-info"><div class="project-title">线上 · 线下 / 平面设计</div><div class="project-desc">宣传册/实体店铺的物料/海报/商品详情页</div></div></div>
+      <div class="project-card"><img src="images/project-9.png" alt="线上·线下平面设计"><div class="project-info"><div class="project-title">线上 · 线下 / 平面设计</div><div class="project-desc">宣传册/实体店铺的物料/海报/商品详情页</div></div></div>
+      <div class="project-card"><img src="images/project-10.png" alt="线上·线下平面设计"><div class="project-info"><div class="project-title">线上 · 线下 / 平面设计</div><div class="project-desc">宣传册/实体店铺的物料/海报/商品详情页</div></div></div>
+    </div>
+  </section>
+
+  <section class="skills-section" id="skills">
+    <h2>设计技能</h2>
+    <div class="software-logos">
+      <div class="logo-card"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="4" fill="#F24E1E"/><circle cx="8.5" cy="8.5" r="2.5" fill="white"/><circle cx="15.5" cy="8.5" r="2.5" fill="white"/><circle cx="12" cy="15.5" r="2.5" fill="white"/></svg></div><span class="logo-name">Figma</span></div>
+      <div class="logo-card"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="3" fill="#FFB74A"/><path d="M12 7L7 12L12 17L17 12L12 7Z" fill="white"/></svg></div><span class="logo-name">Sketch</span></div>
+      <div class="logo-card"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="4" fill="#FF9A00"/><text x="12" y="16" font-size="10" font-weight="bold" fill="white" text-anchor="middle">Ai</text></svg></div><span class="logo-name">Illustrator</span></div>
+      <div class="logo-card"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="4" fill="#31A8FF"/><text x="12" y="16" font-size="9" font-weight="bold" fill="white" text-anchor="middle">Ps</text></svg></div><span class="logo-name">Photoshop</span></div>
+    </div>
+    <div class="stats-container">
+      <div class="stat-item"><div class="stat-number" data-target="5">0</div><div class="stat-label">鲁美专业教育</div><div class="stat-unit">年</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="8">0</div><div class="stat-label">设计经验</div><div class="stat-unit">年</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="30">0</div><div class="stat-label">设计项目</div><div class="stat-unit">+</div></div>
+    </div>
+  </section>
+
+  <section class="pin-section" id="process">
+    <div class="pin-content">
+      <div class="pin-text">
+        <h2>设计过程</h2>
+        <p>从构思到实现，每一个设计项目都是一段旅程。只有深入研究用户需求，探索创新解决方案，反复迭代优化，才能最终打造出令人满意的作品。</p>
+        <p style="margin-top: 20px;">Dream by Design 不仅是一个口号，更是设计哲学。我深信，每一个伟大的设计都源于一个勇敢的梦想。</p>
+      </div>
+      <div class="pin-visual">
+        <div class="rotating-container"><div class="rotating-box"></div><div class="design-text">Design</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal-section" id="vision">
+    <div class="reveal-text"><span class="highlight">Dream</span> by Design<br>让每一个梦想<br>都有设计的温度</div>
+  </section>
+
+  <section class="contact-section" id="contact">
+    <h2>联系我</h2>
+    <div class="contact-info">
+      <!-- 邮箱按钮 -->
+      <button class="btn-glass" aria-label="邮箱：155281067@qq.com">
+        <div class="pill">
+          <div class="pill-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <polyline points="22,5 12,13.5 2,5"/>
+            </svg>
+          </div>
+          <span class="pill-label">邮箱：155281067@qq.com</span>
+        </div>
+      </button>
+      <!-- 电话按钮 -->
+      <button class="btn-glass" aria-label="电话：189-5301-6373">
+        <div class="pill">
+          <div class="pill-icon">
+            <svg class="icon-fill" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.27 6.27l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <span class="pill-label">电话：189-5301-6373</span>
+        </div>
+      </button>
+      <!-- 位置按钮 -->
+      <button class="btn-glass" aria-label="常驻：北京">
+        <div class="pill">
+          <div class="pill-icon">
+            <svg class="icon-fill" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+            </svg>
+          </div>
+          <span class="pill-label">常驻：北京</span>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <footer class="footer"><p>Dream by Design © 2026 | 用设计改变世界</p></footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Toggle
+    const toggleWrapper = document.getElementById('toggleWrapper');
+    const toggleTrack = document.getElementById('toggleTrack');
+    const toggleThumb = document.getElementById('toggleThumb');
+    const moonIcon = document.getElementById('moonIcon');
+    const sunIcon = document.getElementById('sunIcon');
+    const hero = document.querySelector('.hero');
+    let isDesignMode = false;
+
+    toggleTrack.addEventListener('click', () => {
+      isDesignMode = !isDesignMode;
+      if (isDesignMode) {
+        toggleWrapper.classList.add('design-active');
+        toggleThumb.classList.remove('left'); toggleThumb.classList.add('right');
+        hero.classList.remove('dream-mode'); hero.classList.add('design-mode');
+        document.querySelectorAll('.particle').forEach(p => { p.classList.remove('dream-particle'); p.classList.add('design-particle'); });
+        setTimeout(() => { moonIcon.style.display = 'none'; sunIcon.style.display = 'block'; }, 200);
+      } else {
+        toggleWrapper.classList.remove('design-active');
+        toggleThumb.classList.remove('right'); toggleThumb.classList.add('left');
+        hero.classList.remove('design-mode'); hero.classList.add('dream-mode');
+        document.querySelectorAll('.particle').forEach(p => { p.classList.remove('design-particle'); p.classList.add('dream-particle'); });
+        setTimeout(() => { sunIcon.style.display = 'none'; moonIcon.style.display = 'block'; }, 200);
+      }
+    });
+
+    // Particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle dream-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 15 + 's';
+      p.style.animationDuration = (12 + Math.random() * 12) + 's';
+      const s = 2 + Math.random() * 5;
+      p.style.width = s + 'px'; p.style.height = s + 'px';
+      particlesContainer.appendChild(p);
+    }
+
+    // Scroll progress
+    gsap.to('.scroll-progress', { width: '100%', ease: 'none', scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 } });
+
+    // Cards
+    ScrollTrigger.batch('.card', {
+      onEnter: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }); },
+      onLeave: (els) => { gsap.to(els, { opacity: 0.5, y: -50, duration: 0.5 }); },
+      onEnterBack: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }); },
+      onLeaveBack: (els) => { gsap.to(els, { opacity: 0, y: 50, duration: 0.5 }); },
+      start: 'top 80%', end: 'bottom 20%'
+    });
+
+    // Logo cards
+    ScrollTrigger.batch('.logo-card', {
+      onEnter: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }); },
+      onLeave: (els) => { gsap.to(els, { opacity: 0.5, y: -30, duration: 0.5 }); },
+      onEnterBack: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }); },
+      onLeaveBack: (els) => { gsap.to(els, { opacity: 0, y: 30, duration: 0.5 }); },
+      start: 'top 80%', end: 'bottom 20%'
+    });
+
+    // Stats
+    gsap.utils.toArray('.stat-item').forEach(item => {
+      const num = item.querySelector('.stat-number');
+      const target = parseInt(num.dataset.target);
+      ScrollTrigger.create({
+        trigger: item, start: 'top 80%',
+        onEnter: () => {
+          gsap.to(item, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+          gsap.to(num, { duration: 2, ease: 'power2.out',
+            onUpdate: function() { num.textContent = Math.floor(this.progress() * target); },
+            onComplete: function() { num.textContent = target; }
+          });
+        },
+        onLeaveBack: () => { gsap.to(item, { opacity: 0, y: 30, duration: 0.5 }); num.textContent = '0'; }
+      });
+    });
+
+    // Pin section
+    const tl = gsap.timeline({ scrollTrigger: { trigger: '.pin-section', start: 'top top', end: '+=1000', pin: true, scrub: 1 } });
+    tl.to('.pin-text h2', { opacity: 1, y: 0, duration: 0.5 })
+      .to('.pin-text p', { opacity: 1, y: 0, duration: 0.5 })
+      .to('.rotating-container', { opacity: 1, rotation: 360, scale: 1.2, duration: 1 });
+
+    // Reveal text
+    gsap.to('.reveal-text', { opacity: 1, y: 0, duration: 1, scrollTrigger: { trigger: '.reveal-section', start: 'top center', toggleActions: 'play none none reverse' } });
+
+    // Timeline items
+    gsap.utils.toArray('.timeline-item').forEach(item => {
+      const isLeft = item.classList.contains('left');
+      const tl = gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 75%', toggleActions: 'play none none reverse' } });
+      tl.set(item, { opacity: 1 })
+        .fromTo(item.querySelector('.timeline-content'), { opacity: 0, x: isLeft ? -50 : 50 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }, 0)
+        .fromTo(item.querySelector('.timeline-year'), { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)' }, 0.2)
+        .fromTo(item.querySelector('.timeline-title'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, 0.4)
+        .fromTo(item.querySelector('.timeline-desc'), { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0.6);
+    });
+
+    // Showcase items (用于 ScrollTrigger 入场动画)
+    ScrollTrigger.batch('.datav-card', {
+      onEnter: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out' }); },
+      start: 'top 85%'
+    });
+
+    // Project cards
+    ScrollTrigger.batch('.project-card', {
+      onEnter: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out' }); },
+      onLeave: (els) => { gsap.to(els, { opacity: 0.5, y: -30, duration: 0.5 }); },
+      onEnterBack: (els) => { gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out' }); },
+      onLeaveBack: (els) => { gsap.to(els, { opacity: 0, y: 30, duration: 0.5 }); },
+      start: 'top 80%', end: 'bottom 20%'
+    });
+
+    // Navbar scroll
+    gsap.to('.navbar', { backgroundColor: 'rgba(10,10,10,0.95)', duration: 0.3, scrollTrigger: { trigger: '.hero', start: 'bottom top', toggleActions: 'play none none reverse' } });
+  
+
+    // ==================== Glass Cards Carousel ====================
+    const glassCardsData = [
+      { label: 'Philosophy 01', title: '创新思维', desc: '突破传统界限，用前瞻性的设计思维创造令人惊叹的作品。每一个设计都始于一个大胆的梦想。', pattern: 'fingerprint' },
+      { label: 'Philosophy 02', title: '用户体验', desc: '以用户为中心的设计哲学，让每一个交互都流畅自然。设计不仅是视觉，更是感受。', pattern: 'wave' },
+      { label: 'Philosophy 03', title: '精细打磨', desc: '对每一个像素、每一行代码都精益求精。细节决定成败，追求极致的完美。', pattern: 'grid' },
+    ];
+
+    const glassTrack = document.getElementById('glassCardsTrack');
+    let glassCurrentIndex = 0;
+    let glassAutoPlayInterval;
+    let glassHoverPauseTimeout;
+
+    function getGlassPatternHtml(pattern) {
+      if (pattern === 'fingerprint') {
+        return `<div class="pattern-fingerprint"><svg viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="45" rx="35" ry="40" stroke="rgba(100,150,255,0.4)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="28" ry="33" stroke="rgba(100,150,255,0.5)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="21" ry="26" stroke="rgba(100,150,255,0.6)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="14" ry="19" stroke="rgba(100,150,255,0.7)" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="7" ry="12" stroke="rgba(100,150,255,0.8)" stroke-width="1.5"/><path d="M15 45 Q25 20 50 15 Q75 20 85 45" stroke="rgba(100,150,255,0.3)" stroke-width="1.5" fill="none"/><path d="M20 55 Q30 30 50 25 Q70 30 80 55" stroke="rgba(100,150,255,0.4)" stroke-width="1.5" fill="none"/><path d="M25 65 Q35 40 50 35 Q65 40 75 65" stroke="rgba(100,150,255,0.5)" stroke-width="1.5" fill="none"/></svg></div>`;
+      } else if (pattern === 'wave') {
+        return `<div class="pattern-wave"></div>`;
+      } else {
+        return `<div class="pattern-grid"></div>`;
+      }
+    }
+
+    function createGlassCards() {
+      glassCardsData.forEach((data, i) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card-item';
+        card.dataset.index = i;
+        card.innerHTML = `
+          <div>
+            <div class="card-label">${data.label}</div>
+            <div class="card-title">${data.title}</div>
+            <div class="card-image"><div class="card-image-inner">${getGlassPatternHtml(data.pattern)}</div></div>
+          </div>
+          <div class="card-desc">${data.desc}</div>
+        `;
+        card.addEventListener('click', () => goToGlassSlide(i));
+        card.addEventListener('mouseenter', () => onGlassCardHover(i));
+        card.addEventListener('mouseleave', () => onGlassCardLeave());
+        glassTrack.appendChild(card);
+      });
+    }
+
+    function updateGlassPositions() {
+      const cards = glassTrack.querySelectorAll('.glass-card-item');
+      const total = cards.length;
+      cards.forEach((card, i) => {
+        card.classList.remove('position-center', 'position-left', 'position-right', 'position-hidden-left', 'position-hidden-right');
+        let diff = i - glassCurrentIndex;
+        if (diff > 1) diff -= total;
+        if (diff < -1) diff += total;
+        if (diff === 0) card.classList.add('position-center');
+        else if (diff === -1) card.classList.add('position-left');
+        else if (diff === 1) card.classList.add('position-right');
+        else if (diff < -1) card.classList.add('position-hidden-left');
+        else card.classList.add('position-hidden-right');
+      });
+    }
+
+    function goToGlassSlide(index) {
+      glassCurrentIndex = index;
+      if (glassCurrentIndex < 0) glassCurrentIndex = glassCardsData.length - 1;
+      if (glassCurrentIndex >= glassCardsData.length) glassCurrentIndex = 0;
+      updateGlassPositions();
+      resetGlassAutoPlay();
+    }
+
+    function nextGlassSlide() { goToGlassSlide(glassCurrentIndex + 1); }
+    function prevGlassSlide() { goToGlassSlide(glassCurrentIndex - 1); }
+
+    function startGlassAutoPlay() { glassAutoPlayInterval = setInterval(nextGlassSlide, 2500); }
+    function stopGlassAutoPlay() { clearInterval(glassAutoPlayInterval); clearTimeout(glassHoverPauseTimeout); }
+    function resetGlassAutoPlay() { stopGlassAutoPlay(); startGlassAutoPlay(); }
+
+    function onGlassCardHover(index) {
+      if (index === glassCurrentIndex) {
+        stopGlassAutoPlay();
+        glassHoverPauseTimeout = setTimeout(() => { nextGlassSlide(); startGlassAutoPlay(); }, 1000);
+      }
+    }
+    function onGlassCardLeave() { clearTimeout(glassHoverPauseTimeout); resetGlassAutoPlay(); }
+
+    createGlassCards();
+    updateGlassPositions();
+    startGlassAutoPlay();
+
+    // ==================== 数据大屏案例展示（滚动触发 + 备用立即触发） ====================
+    var datavAnimated = false;
+
+    function tryInitDatav() {
+      if (datavAnimated) return;
+      var el = document.querySelector('.datav-wrap');
+      if (!el) return;
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        initDatavAnimations();
+      }
+    }
+
+    ScrollTrigger.create({
+      trigger: '.datav-wrap',
+      start: 'top 90%',
+      onEnter: function() {
+        if (datavAnimated) return;
+        initDatavAnimations();
+      }
+    });
+
+    window.addEventListener('load', tryInitDatav);
+    window.addEventListener('resize', tryInitDatav);
+
+    function initDatavAnimations() {
+      datavAnimated = true;
+
+      // ===== KPI 整数计数器（完全参考源文件 animateCounter 逻辑） =====
+      function animateCounter(el) {
+        var target = parseInt(el.dataset.target, 10);
+        var suffix = el.dataset.suffix || '';
+        var duration = 2000;
+        var startTime = performance.now();
+        function step(now) {
+          var p = Math.min((now - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.floor(eased * target) + suffix;
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      document.querySelectorAll('.datav-counter').forEach(function(el) {
+        setTimeout(function() { animateCounter(el); }, 200);
+      });
+
+      // ===== 环形仪表（完全参考源文件 animateRing 逻辑） =====
+      function animateRing(arcId, valId, targetPct) {
+        var arc = document.getElementById(arcId);
+        var valEl = document.getElementById(valId);
+        if (!arc || !valEl) return;
+        var circumference = 352;
+        var targetOffset = circumference * (1 - targetPct / 100);
+        var startTime = performance.now();
+        var startOffset = circumference;
+        var duration = 2500;
+        function step(now) {
+          var p = Math.min((now - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          var offset = startOffset + (targetOffset - startOffset) * eased;
+          arc.style.strokeDashoffset = offset;
+          valEl.textContent = (eased * targetPct).toFixed(2) + '%';
+          if (p < 1) requestAnimationFrame(step);
+        }
+        setTimeout(function() { requestAnimationFrame(step); }, 400);
+      }
+
+      animateRing('datavRing1', 'datavRingVal1', 5.91);
+      animateRing('datavRing2', 'datavRingVal2', 94.09);
+      animateRing('datavRing3', 'datavRingVal3', 2.39);
+
+      // ===== 柱状图入场 =====
+      var bars = document.querySelectorAll('.datav-bar-col');
+      bars.forEach(function(bar, i) {
+        bar.style.opacity = '0';
+        bar.style.transform = 'scaleY(0)';
+        setTimeout(function() {
+          bar.style.transition = 'opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1)';
+          bar.style.opacity = '1';
+          bar.style.transform = 'scaleY(1)';
+        }, 500 + i * 60);
+      });
+
+      // ===== 加油升数计数动效（完全参考源文件 animateTxLiter 逻辑） =====
+      function animateTxLiter(el) {
+        var target = parseFloat(el.dataset.target);
+        var duration = 1800;
+        var startTime = performance.now();
+        function step(now) {
+          var p = Math.min((now - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = (eased * target).toFixed(2) + 'L';
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      document.querySelectorAll('.datav-tx-liter').forEach(function(td, i) {
+        setTimeout(function() { animateTxLiter(td); }, 800 + i * 80);
+      });
+
+      // ===== 时钟 =====
+      function updateClock() {
+        var now = new Date();
+        var h = now.getHours().toString().padStart(2, '0');
+        var m = now.getMinutes().toString().padStart(2, '0');
+        var s = now.getSeconds().toString().padStart(2, '0');
+        var el = document.getElementById('datavClock');
+        if (el) el.textContent = h + ':' + m + ':' + s;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    }
+
+
+    // ==================== Spotlight Navigation ====================
+    const navTrack = document.getElementById('navTrack');
+    const lampBar = document.getElementById('lampBar');
+    const lampBeam = document.getElementById('lampBeam');
+    const navItems = navTrack.querySelectorAll('.nav-item');
+    let currentNavIndex = 0;
+
+    function moveLamp(index) {
+      const target = navItems[index];
+      const trackRect = navTrack.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+
+      const left = targetRect.left - trackRect.left;
+      const width = targetRect.width;
+      const center = left + width / 2;
+
+      lampBar.style.left = (left + 8) + 'px';
+      lampBar.style.width = (width - 16) + 'px';
+
+      lampBeam.style.left = (center - width * 0.9) + 'px';
+      lampBeam.style.width = (width * 1.8) + 'px';
+
+      navItems.forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+      });
+
+      currentNavIndex = index;
+    }
+
+    function initLamp() {
+      const active = navTrack.querySelector('.nav-item.active');
+      if (active) {
+        moveLamp(parseInt(active.dataset.index));
+      }
+    }
+
+    navItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        moveLamp(index);
+        const targetId = item.dataset.target;
+        if (targetId) {
+          document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    window.addEventListener('resize', () => moveLamp(currentNavIndex));
+
+    // 滚动时更新导航高亮
+    const sections = ['home', 'concepts', 'journey', 'showcase', 'projects', 'skills', 'process', 'contact'];
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 200;
+      sections.forEach((id, idx) => {
+        const section = document.getElementById(id);
+        if (section) {
+          const top = section.offsetTop;
+          const bottom = top + section.offsetHeight;
+          if (scrollPos >= top && scrollPos < bottom) {
+            moveLamp(idx);
+          }
+        }
+      });
+    });
+
+    initLamp();
+</script>
+</body>
+</html>
